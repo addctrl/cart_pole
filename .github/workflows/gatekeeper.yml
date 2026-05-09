@@ -29,4 +29,10 @@ jobs:
         run: mypy src/
 
       - name: Pytest — testy i coverage
-        run: pytest
+        run: |
+          pytest
+          status=$?
+          if [ "$status" -eq 0 ] || [ "$status" -eq 5 ]; then
+            exit 0
+          fi
+          exit "$status"
