@@ -9,14 +9,14 @@
 
 | Pole | Wartość |
 |---|---|
-| **Data ostatniego przebiegu** | — |
-| **Wynik ogólny** | — |
-| **Coverage** | — |
+| **Data ostatniego przebiegu** | 2026-05-09 |
+| **Wynik ogólny** | ✅ PASS |
+| **Coverage** | 100% |
 | **Wymagany próg coverage** | 100% |
-| **Liczba testów** | — |
-| **Przechodzące** | — |
-| **Nieprzechodzące** | — |
-| **Pominięte** | — |
+| **Liczba testów** | 21 |
+| **Przechodzące** | 21 |
+| **Nieprzechodzące** | 0 |
+| **Pominięte** | 0 |
 
 ---
 
@@ -24,9 +24,10 @@
 
 | Moduł | Pokrycie | Brakujące linie | Status |
 |---|---|---|---|
-| `src/config.py` | — | — | — |
-| `src/training.py` | — | — | — |
-| `src/evaluate.py` | — | — | — |
+| `src/__init__.py` | 100% | brak | ✅ |
+| `src/config.py` | 100% | brak | ✅ |
+| `src/training.py` | 100% | brak | ✅ |
+| `src/evaluate.py` | n/d — nie zaimplementowany (Epik 4) | — | ⏳ |
 
 ---
 
@@ -34,7 +35,7 @@
 
 | Test | Moduł | Opis błędu | Przypisany do | Status |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| brak | — | — | — | — |
 
 ---
 
@@ -42,7 +43,7 @@
 
 | Moduł | Funkcja/Metoda | Priorytet | Status |
 |---|---|---|---|
-| — | — | — | — |
+| `src/evaluate.py` | `evaluate_model()`, `main()` | Wysoki | ⏳ Epik 4 |
 
 ---
 
@@ -50,9 +51,11 @@
 
 | Moduł | Funkcje bez docstringa | Status |
 |---|---|---|
-| `src/config.py` | — | — |
-| `src/training.py` | — | — |
-| `src/evaluate.py` | — | — |
+| `src/config.py` | brak — wszystkie funkcje pokryte NumPy PL | ✅ |
+| `src/training.py` | brak — wszystkie funkcje pokryte NumPy PL | ✅ |
+| `src/evaluate.py` | n/d — nie zaimplementowany | ⏳ |
+
+Weryfikacja: `pdoc src/ -o docs/` — exit 0, dokumentacja HTML wygenerowana bez błędów.
 
 ---
 
@@ -60,7 +63,7 @@
 
 | Data | Coverage | Testy pass/fail | Uwagi |
 |---|---|---|---|
-| — | — | — | — |
+| 2026-05-09 | 100% | 21/0 | Epiki 2 i 3 — `config.py`, `training.py` i ich testy. Ruff ✅ Mypy strict ✅ pdoc ✅ |
 
 ---
 
