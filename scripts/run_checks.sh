@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Lokalny gatekeeping — odpowiednik GitHub Actions gatekeeper.yml
 # Uruchom: bash scripts/run_checks.sh
-# Exit 1 przy pierwszym błędzie.
+# Exit != 0 przy pierwszym nieobsłużonym błędzie.
 
 set -euo pipefail
 
