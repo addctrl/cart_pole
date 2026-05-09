@@ -64,17 +64,19 @@ models/*.zip ──► evaluate.py ──► render_mode="human"
 
 ### Epik 1: Konfiguracja środowiska deweloperskiego
 
-- [ ] **T-1.1:** Utworzenie `requirements.txt` z pinowanymi wersjami zależności
+- [x] **T-1.1:** Utworzenie `requirements.txt` z pinowanymi wersjami zależności
   - Kryteria akceptacji: `pip install -r requirements.txt` w czystym venv kończy się sukcesem.
   - Zależności: `gymnasium`, `stable-baselines3`, `tensorboard`, `pygame`, `pytest`, `pytest-cov`, `ruff`, `mypy`, `pdoc`.
-- [ ] **T-1.2:** Utworzenie `pyproject.toml` z konfiguracją Ruff, Mypy, Pytest
+- [x] **T-1.2:** Utworzenie `pyproject.toml` z konfiguracją Ruff, Mypy, Pytest
   - Kryteria akceptacji: `ruff check .` i `mypy src/` działają bez błędów konfiguracyjnych.
-- [ ] **T-1.3:** Utworzenie struktury katalogów (`src/`, `tests/`, `data/`, `logs/`, `models/`, `docs/`)
+- [x] **T-1.3:** Utworzenie struktury katalogów (`src/`, `tests/`, `data/`, `logs/`, `models/`, `docs/`)
   - Kryteria akceptacji: Katalogi istnieją, pliki `__init__.py` w `src/` i `tests/`.
-- [ ] **T-1.4:** Utworzenie pliku `data/experiments.csv` z macierzą eksperymentów
+- [x] **T-1.4:** Utworzenie pliku `data/experiments.csv` z macierzą eksperymentów
   - Kryteria akceptacji: CSV zawiera kolumny: `experiment_id`, `env_id`, `net_arch`, `learning_rate`, `batch_size`, `gamma`, `n_steps`, `ent_coef`, `total_timesteps`. Kolumny wynikowe (puste): `mean_reward`, `std_reward`, `training_time_s`.
-- [ ] **T-1.5:** Konfiguracja `.github/workflows/gatekeeper.yml`
+- [x] **T-1.5:** Konfiguracja `.github/workflows/gatekeeper.yml`
   - Kryteria akceptacji: Pipeline uruchamia się na PR do `main`. Etapy: Ruff, Mypy, Pytest.
+- [x] **T-1.6:** Skrypt `scripts/run_checks.sh` — lokalny odpowiednik pipeline'u CI/CD
+  - Kryteria akceptacji: Plik wykonywalny, exit 0 przy sukcesie, exit 1 przy błędzie.
 
 ### Epik 2: Implementacja modułu konfiguracji
 
