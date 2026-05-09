@@ -80,7 +80,7 @@ def load_experiments(path: str) -> list[dict[str, Any]]:
 
     experiments: list[dict[str, Any]] = []
 
-    with csv_path.open(newline="") as f:
+    with csv_path.open(encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
         for row in reader:
             exp: dict[str, Any] = dict(row)
