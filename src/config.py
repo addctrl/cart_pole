@@ -141,7 +141,7 @@ def save_results(
     fieldnames: list[str] = []
     found = False
 
-    with csv_path.open(newline="") as f:
+    with csv_path.open(encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
         fieldnames = list(reader.fieldnames or [])
         for row in reader:
@@ -153,7 +153,7 @@ def save_results(
     if not found:
         raise ValueError(f"Eksperyment {experiment_id!r} nie istnieje w pliku CSV.")
 
-    with csv_path.open("w", newline="") as f:
+    with csv_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
