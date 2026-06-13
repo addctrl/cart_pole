@@ -3,6 +3,11 @@
 Wszystkie istotne zmiany w projekcie są dokumentowane w tym pliku.
 Format: [SemVer](https://semver.org/). Typ zmian: Dodane, Zmienione, Naprawione, Usunięte.
 
+## [0.3.1] - 2026-06-13
+
+### Zmienione
+- `data/experiments.csv` — rozbudowano macierz eksperymentów CartPole-v1 do 33 treningów zgodnych z OFAT: 3 architektury sieci i 5 hiperparametrów w wariantach mały/optymalny/duży przy stałym baseline dla każdej sieci
+
 ## [0.3.0] - 2026-06-13
 
 ### Dodane
