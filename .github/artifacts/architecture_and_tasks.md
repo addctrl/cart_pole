@@ -104,11 +104,11 @@ models/*.zip ──► evaluate.py ──► render_mode="human"
 
 ### Epik 4: Skrypt ewaluacyjny
 
-- [ ] **T-4.1:** Implementacja `src/evaluate.py`
+- [x] **T-4.1:** Implementacja `src/evaluate.py`
   - `evaluate_model()` — ładowanie modelu, uruchomienie epizodów z renderowaniem.
   - `main()` — CLI via `argparse` (argumenty: `--model-path`, `--env-id`, `--episodes`).
   - Kryteria akceptacji: `python -m src.evaluate --model-path models/exp_001.zip --env-id CartPole-v1 --episodes 5` renderuje grę.
-- [ ] **T-4.2:** Testy jednostkowe `tests/test_evaluate.py`
+- [x] **T-4.2:** Testy jednostkowe `tests/test_evaluate.py`
   - Scenariusze: mockowane ładowanie modelu, mockowane renderowanie, nieprawidłowa ścieżka modelu.
   - Kryteria akceptacji: 100% coverage modułu `evaluate.py`. Brak renderowania w testach.
 
@@ -141,6 +141,11 @@ Epik 0 ──► Epik 1 ──► Epik 2 ──► Epik 3 ──► Epik 4 ─�
 - Epik 2 i 3 można częściowo równoleglić (config.py jest niezależny od training.py).
 - Epik 4 wymaga ukończenia Epiku 3 (potrzebne są zapisane modele do ewaluacji).
 - Epik 5 wymaga ukończenia Epików 2, 3 i 4.
+
+### Status po realizacji epika 4
+
+- Epik 4 zamknięty: moduł `src/evaluate.py` i testy `tests/test_evaluate.py` zaimplementowane.
+- Następny krok: uruchomienie eksperymentów z epika 5 oraz wybór najlepszego modelu do demo.
 
 ---
 

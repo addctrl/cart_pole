@@ -3,6 +3,16 @@
 Wszystkie istotne zmiany w projekcie są dokumentowane w tym pliku.
 Format: [SemVer](https://semver.org/). Typ zmian: Dodane, Zmienione, Naprawione, Usunięte.
 
+## [0.3.0] - 2026-06-13
+
+### Dodane
+- `src/evaluate.py` — skrypt ewaluacyjny PPO z CLI (`--model-path`, `--env-id`, `--episodes`) i renderowaniem `render_mode="human"`
+- `tests/test_evaluate.py` — testy jednostkowe modułu ewaluacji z mockowaniem modelu, środowiska i argumentów CLI
+
+### Zmienione
+- `README.md` — instrukcja uruchomienia ewaluacji na macOS z `SDL_VIDEODRIVER=cocoa`
+- `.github/artifacts/architecture_and_tasks.md` — oznaczenie zadań T-4.1 i T-4.2 jako ukończonych
+
 ## [0.2.0] - 2026-05-09
 
 ### Dodane
