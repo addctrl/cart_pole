@@ -1,12 +1,14 @@
 """Moduł treningowy — pętla PPO iterująca po konfiguracji CSV."""
 
+import argparse
 import time
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 import gymnasium as gym
 from stable_baselines3 import PPO
 from stable_baselines3.common.evaluation import evaluate_policy
+from stable_baselines3.common.monitor import Monitor
 
 from src.config import load_experiments, parse_net_arch, save_results
 
@@ -58,7 +60,7 @@ def run_experiment(config: dict[str, object]) -> dict[str, float]:
     """
     Path(MODELS_DIR).mkdir(exist_ok=True)
 
-    env = gym.make(str(config["env_id"]))
+    env: gym.Env[Any, Any] = Monitor(gym.make(str(config["env_id"])))
 
     net_arch: list[int] = parse_net_arch(str(config["net_arch"]))
     policy_kwargs: dict[str, list[int]] = {"net_arch": net_arch}
@@ -134,3 +136,26 @@ def run_all_experiments(csv_path: str) -> None:
 
         cooldown = get_cooldown_seconds(parse_net_arch(str(config["net_arch"])))
         time.sleep(cooldown)
+
+
+def main() -> None:
+    """Uruchom CLI modułu treningowego.
+
+    CLI deleguje wykonanie do ``run_all_experiments()`` i przyjmuje
+    ścieżkę do pliku CSV z macierzą eksperymentów.
+    """
+    parser = argparse.ArgumentParser(
+        description="Uruchomienie pętli eksperymentów PPO na podstawie pliku CSV."
+    )
+    parser.add_argument(
+        "--csv",
+        required=True,
+        help="Ścieżka do pliku CSV z konfiguracją eksperymentów.",
+    )
+    args = parser.parse_args()
+
+    run_all_experiments(args.csv)
+
+
+if __name__ == "__main__":  # pragma: no cover
+    main()

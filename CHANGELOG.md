@@ -3,6 +3,16 @@
 Wszystkie istotne zmiany w projekcie są dokumentowane w tym pliku.
 Format: [SemVer](https://semver.org/). Typ zmian: Dodane, Zmienione, Naprawione, Usunięte.
 
+## [0.4.0] - 2026-06-13
+
+### Dodane
+- `src/training.py` — CLI `python -m src.training --csv ...` zgodne z dokumentacją operacyjną projektu
+
+### Zmienione
+- `src/training.py` — środowisko treningowe jest opakowane w `Monitor`, co stabilizuje i uwiarygadnia metryki epizodów podczas ewaluacji polityki
+- `tests/test_training.py` — test CLI dla modułu treningowego i dostosowanie mocków do `Monitor`
+- `README.md` — pełna instrukcja operacyjna dla epika 5: komendy treningu, TensorBoard, ranking wyników i tabela wariantów hiperparametrów
+
 ## [0.3.1] - 2026-06-13
 
 ### Zmienione
