@@ -95,10 +95,12 @@ Skrypt:
 ### Ewaluacja (demo na żywo)
 
 ```bash
+export SDL_VIDEODRIVER=cocoa
 python -m src.evaluate --model-path models/exp_001.zip --env-id CartPole-v1 --episodes 5
 ```
 
 Ładuje wytrenowany model i renderuje grę w trybie graficznym (`render_mode="human"`).
+Na macOS Apple Silicon ustawienie `SDL_VIDEODRIVER=cocoa` eliminuje typowe problemy z oknem pygame.
 
 ### TensorBoard (analityka)
 
