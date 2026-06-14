@@ -6,6 +6,10 @@ Format: [SemVer](https://semver.org/). Typ zmian: Dodane, Zmienione, Naprawione,
 ## [0.6.4] - 2026-06-14
 
 ### Dodane
+- `src/humanoid_production.py` — produkcyjny skrypt treningu `Humanoid-v5` na 30M kroków z auto-resume oraz spójnym checkpointem (model + `VecNormalize`) oparty o najlepsze parametry z Optuny
+- `scripts/run_humanoid_production.sh` — wrapper uruchomieniowy dla finalnego treningu produkcyjnego Humanoida
+- `src/evaluate_humanoid_production.py` — dedykowany moduł CLI do ewaluacji ostatniego produkcyjnego modelu Humanoida
+- `scripts/evaluate_humanoid_production.sh` — wrapper uruchomieniowy ewaluacji modelu `models/humanoid_prod/latest_model.zip`
 - `src/tensorboard_export.py` — moduł CLI do eksportu scalarów TensorBoard z wielu runów jednocześnie do CSV (`pivot` i opcjonalnie `long`)
 - `src/objective_score_csv.py` — moduł CLI do hurtowego przeliczania `objective_score = mean_reward - penalty * std_reward` dla jednego lub wielu plików CSV
 - `tests/test_tensorboard_export.py` — testy jednostkowe eksportera TensorBoard z pełnym pokryciem modułu

@@ -15,7 +15,7 @@ if [[ -z "$model_path" ]]; then
 import csv
 from pathlib import Path
 
-results_path = Path("data/humanoid_bayes_results.csv")
+results_path = Path("data/humanoid_bayes_results_512x512.csv")
 rows = list(csv.DictReader(results_path.open(encoding="utf-8", newline="")))
 completed = [row for row in rows if row.get("status") == "completed" and row.get("objective_score")]
 if not completed:
@@ -37,4 +37,4 @@ fi
 
 export SDL_VIDEODRIVER=cocoa
 source .venv/bin/activate
-python -m src.evaluate --model-path "$model_path" --env-id Humanoid-v5 --episodes "$episodes"
+python -m src.evaluate --model-path models/humanoid_prod/latest_model.zip --env-id Humanoid-v5 --episodes "$episodes"

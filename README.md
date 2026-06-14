@@ -318,14 +318,34 @@ Gotowe wrappery są już w katalogu `scripts/` i odpowiadają najczęstszym oper
 - `scripts/run_lunarlander_training.sh`
 - `scripts/run_lunarlander_pre5.sh`
 - `scripts/run_humanoid_bayes.sh`
+- `scripts/run_humanoid_production.sh`
 - `scripts/run_tensorboard.sh`
 - `scripts/evaluate_cartpole.sh [model_path] [episodes]`
 - `scripts/evaluate_lunarlander.sh [model_path] [episodes]`
 - `scripts/evaluate_humanoid.sh [model_path] [episodes]`
+- `scripts/evaluate_humanoid_production.sh [episodes]`
 - `scripts/export_tensorboard_csv.sh [logdir] [output_csv] [tag1 tag2 ...]`
 - `scripts/recompute_objective_scores.sh [stability_penalty] [csv1 csv2 ...]`
 
 Każdy z nich zakłada aktywację `.venv` wewnątrz skryptu i uruchamia gotową komendę bez ręcznego klepania parametrów.
+
+### Humanoid produkcyjny — pojedynczy trening 30M
+
+Produkcja oparta o najlepszy zestaw hiperparametrów z Optuny uruchamia się wrapperem:
+
+```bash
+bash scripts/run_humanoid_production.sh
+```
+
+Skrypt `src.humanoid_production` ma auto-resume i checkpoint spójny (model + `VecNormalize`).
+Jeśli znajdzie `models/humanoid_prod/latest_model.zip` oraz `models/humanoid_prod/latest_vecnormalize.pkl`,
+wznowi trening od ostatniego kroku do budżetu `30_000_000` kroków.
+
+Ewaluacja ostatniego modelu produkcyjnego:
+
+```bash
+bash scripts/evaluate_humanoid_production.sh
+```
 ### Szybka weryfikacja startu treningu
 
 Jeśli chcesz najpierw sprawdzić sam mechanizm uruchomienia bez pełnych 33 eksperymentów, przygotuj tymczasowy CSV z jednym wierszem i uruchom tę samą komendę `python -m src.training --csv <ścieżka>`. Logika treningu i zapisu artefaktów jest identyczna.
