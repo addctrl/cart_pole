@@ -245,3 +245,76 @@ for _ in range(max_steps):
     if terminated or truncated:
         obs, info = env.reset()
 ```
+
+---
+
+## DKB-007: LunarLander wymaga Box2D i wersji `v3`
+
+| Pole | Wartość |
+|---|---|
+| **Data** | 2026-06-13 |
+| **Kategoria** | Gymnasium / LunarLander |
+| **Priorytet** | Wysoki |
+
+### Problem
+
+`LunarLander-v2` został zastąpiony przez `LunarLander-v3` w aktualnym `gymnasium`. Dodatkowo środowisko nie jest dostępne bez zależności Box2D i narzędzia `swig`.
+
+### Rozwiązanie
+
+1. Instaluj zależności z `requirements.txt`, które zawierają `gymnasium[box2d]` i `swig`.
+2. W CSV i komendach CLI używaj `LunarLander-v3`.
+3. Przy istniejącym venv wykonaj ponowny `pip install -r requirements.txt`.
+
+---
+
+## DKB-008: Humanoid wymaga MuJoCo i izolacji zależności
+
+| Pole | Wartość |
+|---|---|
+| **Data** | 2026-06-13 |
+| **Kategoria** | Gymnasium / MuJoCo / Optuna |
+| **Priorytet** | Wysoki |
+
+### Problem
+
+Środowisko `Humanoid-v5` nie jest częścią bazowego stosu CartPole/LunarLander. Wymaga dodatkowych zależności MuJoCo, a optymalizacja bayesowska wymaga biblioteki `optuna`. Dołączenie tych pakietów do ścieżki bazowej zwiększa ryzyko instalacyjnych regresji i niepotrzebnie poszerza zależności podstawowego projektu.
+
+### Rozwiązanie
+
+1. Instaluj wariant Humanoid wyłącznie przez:
+
+    ```bash
+    pip install -r requirements-humanoid.txt
+    ```
+
+2. Uruchamiaj optymalizację dedykowanym modułem:
+
+    ```bash
+    python -m src.humanoid_bayes --trials 10 --timesteps 300000
+    ```
+
+3. Nie dopinaj semantyki Optuny do `data/experiments.csv`; wyniki zapisuj do osobnego CSV.
+
+Próba uruchomienia `LunarLander-v2` kończy się deprecjacją środowiska, a `LunarLander-v3` bez dodatkowych zależności kończy się błędem:
+
+```text
+DependencyNotInstalled: Box2D is not installed
+```
+
+### Rozwiązanie
+
+1. Używaj `LunarLander-v3` zamiast `LunarLander-v2`.
+2. W środowisku Python zainstaluj zależności Box2D:
+
+```bash
+pip install swig
+pip install "gymnasium[box2d]"
+```
+
+3. W repozytorium utrzymuj `gymnasium[box2d]==1.1.1` oraz `swig` w `requirements.txt`.
+
+### Konsekwencje
+
+- Kod treningowy nie wymaga zmian logicznych, bo `env_id` jest parametrem wejściowym.
+- Zmienia się tylko konfiguracja eksperymentów i zależności środowiskowe.

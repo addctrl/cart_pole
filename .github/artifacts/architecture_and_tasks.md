@@ -120,6 +120,14 @@ models/*.zip ──► evaluate.py ──► render_mode="human"
   - Kryteria akceptacji: Wykresy porównawcze `ep_rew_mean` dla 3 architektur sieci. Screenshoty w dokumentacji.
 - [ ] **T-5.3:** Uruchomienie ewaluacji najlepszego modelu na LunarLander-v2
   - Kryteria akceptacji: Demo live działa z `render_mode="human"`.
+- [x] **T-5.4:** Przygotowanie odseparowanej ścieżki Humanoid z optymalizacją bayesowską
+  - Kryteria akceptacji: istnieje osobny moduł CLI dla `Humanoid-v5`, stała architektura `[256, 256]`, osobny plik wymagań i brak zmian behawioralnych w `src/training.py`.
+- [ ] **T-5.5:** Uruchomienie eksperymentu 5 dla Humanoid na jednej sieci `256 x 256`
+  - Kryteria akceptacji: wyniki prób Optuny są zapisane w osobnym CSV, najlepszy zestaw hiperparametrów jest wskazany do dalszej ewaluacji.
+- [x] **T-5.6:** Przygotowanie odseparowanej ścieżki LunarLander pre5 z optymalizacją bayesowską
+  - Kryteria akceptacji: istnieje osobny moduł CLI dla `LunarLander-v3`, search space porównuje architektury `[64, 64]` i `[128, 128]`, wyniki trafiają do osobnego CSV, a bazowy pipeline `src.training.py` pozostaje bez zmian behawioralnych.
+- [ ] **T-5.7:** Uruchomienie eksperymentu pre5 dla LunarLandera na sieciach `64 x 64` i `128 x 128`
+  - Kryteria akceptacji: wyniki prób Optuny są zapisane w osobnym CSV, najlepsza architektura i zestaw hiperparametrów są wskazane do porównania z istniejącymi eksperymentami LunarLandera.
 
 ### Epik 6: Finalizacja i dokumentacja
 
@@ -152,6 +160,11 @@ Epik 0 ──► Epik 1 ──► Epik 2 ──► Epik 3 ──► Epik 4 ─�
 - CLI treningu `python -m src.training --csv ...` zostało zweryfikowane testem jednostkowym.
 - Smoke test potwierdził: start treningu PPO, zapis modelu `.zip` oraz zapis eventów TensorBoard z tagami `rollout/ep_rew_mean` i `train/loss`.
 - Pełny przebieg 33 eksperymentów pozostaje do ręcznego uruchomienia na docelowym sprzęcie.
+- Analiza porównawcza etapu 1 i etapu 2 została zapisana w `.github/artifacts/cartpole_analysis.md`.
+- Dedykowany moduł `python -m src.humanoid_bayes` izoluje wariant Humanoid od bazowego pipeline'u CSV i używa osobnego pliku `requirements-humanoid.txt`.
+- Dedykowany moduł `python -m src.lunarlander_bayes` izoluje eksperyment pre5 dla `LunarLander-v3` i porównuje architektury `[64, 64]` oraz `[128, 128]` w osobnym studium Optuny.
+- Dodano moduł `python -m src.tensorboard_export` oraz wrapper `scripts/export_tensorboard_csv.sh` do eksportu scalarów TensorBoard z wielu runów jednocześnie do CSV (`pivot` + `long`).
+- Dodano moduł `python -m src.objective_score_csv` oraz wrapper `scripts/recompute_objective_scores.sh` do ujednolicania `objective_score` między seriami eksperymentów.
 
 ---
 

@@ -198,3 +198,86 @@ Projekt targetuje **Python 3.12** jako wersję docelową.
 
 - Kod nie musi zachowywać kompatybilności wstecznej z Python < 3.12.
 - Type hints mogą korzystać z `X | Y` zamiast `Union[X, Y]`.
+
+---
+
+## ADR-006: Izolacja wariantu Humanoid z optymalizacją bayesowską
+
+| Pole | Wartość |
+|---|---|
+| **Data** | 2026-06-13 |
+| **Status** | Zaakceptowana |
+| **Decydent** | Architekt / User request |
+
+### Kontekst
+
+Projekt posiada już stabilny pipeline CSV dla CartPole i LunarLander. Dodatkowy eksperyment 5 ma badać wyłącznie środowisko `Humanoid-v5` na jednej architekturze sieci `256 x 256` z użyciem optymalizacji bayesowskiej hiperparametrów PPO. Ten wariant nie może destabilizować ani obciążać zależnościami bazowej ścieżki treningowej.
+
+### Decyzja
+
+Wariant Humanoid zostaje zaimplementowany jako **osobny moduł CLI** `src/humanoid_bayes.py` z **osobnym plikiem zależności** `requirements-humanoid.txt`.
+
+### Uzasadnienie
+
+1. **Izolacja ryzyka** — Optuna i MuJoCo nie stają się obowiązkową częścią standardowego uruchomienia CartPole/LunarLander.
+2. **Brak regresji** — istniejący moduł `src.training.py` zachowuje obecne API i semantykę.
+3. **Współdzielenie tylko stabilnego rdzenia** — wariant Humanoid reużywa wyłącznie sprawdzony `run_experiment()`.
+4. **Zgodność z KISS** — brak rozbudowy bazowego formatu CSV o semantykę studium Optuny.
+
+### Konsekwencje
+
+- Uruchomienie Humanoida wymaga jawnej instalacji `requirements-humanoid.txt`.
+- Wyniki prób są logowane do osobnego CSV, a nie do `data/experiments.csv`.
+- Dalsze eksperymenty bayesowskie dla innych środowisk powinny być dodawane analogicznie jako osobne warianty.
+
+### Odrzucone alternatywy
+
+| Podejście | Powód odrzucenia |
+|---|---|
+| Rozszerzenie `src.training.py` o tryb Optuny | Zwiększa sprzężenie i ryzyko regresji w bazowym pipeline'ie. |
+| Dodanie Optuny do `requirements.txt` | Wymusza zbędne zależności dla użytkowników CartPole/LunarLander. |
+| Przebudowa `data/experiments.csv` pod triale bayesowskie | CSV OFAT i studium Optuny mają różną semantykę sterowania. |
+
+---
+
+## ADR-007: Izolacja eksperymentu pre5 dla LunarLandera z porównaniem 64x64 vs 128x128
+
+| Pole | Wartość |
+|---|---|
+| **Data** | 2026-06-13 |
+| **Status** | Zaakceptowana |
+| **Decydent** | Architekt / User request |
+
+### Kontekst
+
+Istniejąca analiza LunarLandera wskazuje, że architektura `[64, 64]` pozostaje interesującym lekkim kandydatem, ale nie została jeszcze porównana z wariantem pośrednim `[128, 128]` w uporządkowanym studium optymalizacji bayesowskiej. Użytkownik zlecił realizację eksperymentu pre5 inspirowanego artykułem o PPO hyperparameter optimization, z naciskiem na dyskretyzowaną przestrzeń wyszukiwania, raportowanie wyników pośrednich i porównanie jakości/stabilności polityki.
+
+### Decyzja
+
+Eksperyment pre5 dla `LunarLander-v3` zostaje zaimplementowany jako **osobny moduł CLI** `src/lunarlander_bayes.py`, który:
+
+1. porównuje wyłącznie architektury `[64, 64]` i `[128, 128]`,
+2. używa **Optuny z TPE i MedianPruner**,
+3. loguje wyniki do osobnego pliku `data/lunarlander_bayes_results.csv`,
+4. optymalizuje funkcję celu łączącą średnią nagrodę i stabilność: `objective_score = mean_reward - stability_penalty * std_reward`.
+
+### Uzasadnienie
+
+1. **Izolacja ryzyka** — nowy eksperyment nie destabilizuje bazowego pipeline'u CSV ani dotychczasowych eksperymentów LunarLandera.
+2. **Zgodność z celem badawczym** — eksperyment odpowiada bezpośrednio na pytanie, czy sieć pośrednia `[128, 128]` daje lepszy kompromis niż `[64, 64]`.
+3. **Spójność metodologiczna** — dyskretyzowana przestrzeń wyszukiwania i etapowa ewaluacja odzwierciedlają praktyczne wnioski z artykułu o optymalizacji PPO.
+4. **Minimalny narzut** — projekt reużywa istniejące zależności Box2D i opcjonalną Optunę bez przebudowy bazowego modelu danych.
+
+### Konsekwencje
+
+- W repozytorium pojawia się drugi odseparowany runner bayesowski obok wariantu Humanoid.
+- Wyniki pre5 nie są zapisywane do `data/lunarlander_experiments.csv`, tylko do osobnego CSV pod dalszą analizę.
+- Faktyczne uruchomienie studium pozostaje osobnym krokiem operacyjnym ze względu na koszt obliczeniowy.
+
+### Odrzucone alternatywy
+
+| Podejście | Powód odrzucenia |
+|---|---|
+| Rozszerzenie `src.humanoid_bayes.py` o wiele środowisk | Zwiększa sprzężenie i miesza dwa różne cele badawcze. |
+| Dodanie architektury `[128, 128]` do bazowego CSV OFAT | OFAT i Optuna odpowiadają na inne pytania badawcze i produkują inne artefakty. |
+| Porównanie wszystkich architektur `[16, 16]`, `[64, 64]`, `[128, 128]`, `[1024, 1024, 1024]` w jednym sweepie | Zbyt szeroki zakres jak na budżet CPU i cel pre5. |

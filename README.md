@@ -15,7 +15,7 @@ Udowodnienie analitycznego podejścia inżyniera do procesu uczenia maszynowego.
 | Środowisko | Rola w projekcie |
 |---|---|
 | **CartPole-v1** | Baza analityczna — szybkie przemielenie macierzy eksperymentów |
-| **LunarLander-v2** | Demo docelowe — weryfikacja najlepszych parametrów na żywo |
+| **LunarLander-v3** | Demo docelowe i eksperyment pre5 — weryfikacja najlepszych parametrów na żywo oraz porównanie architektur w studium Optuny |
 
 ### Zakres badawczy
 
@@ -119,9 +119,16 @@ Liczba treningów wynika ze wzoru: `3 sieci * (1 baseline + 5 parametrów * 2 od
 
 ### Pętla eksperymentów (trening)
 
+**Cart-pole**
 ```bash
 source .venv/bin/activate
 python -m src.training --csv data/experiments.csv
+```
+
+**Lunarlander**
+```bash
+source .venv/bin/activate
+python -m src.training --csv data/lunarlander_experiments.csv
 ```
 
 Komenda uruchamia pełną pętlę treningową sterowaną z CSV. Skrypt:
@@ -137,8 +144,188 @@ Uwagi operacyjne:
 - Ponowne uruchomienie tej samej komendy działa jak **resume**. Wiersze z uzupełnionym `mean_reward` są pomijane.
 - Dla dużej sieci `[1024, 1024, 1024]` cooldown wynosi 120 sekund, dla pozostałych 60 sekund.
 - Modele zapisują się jako `models/<experiment_id>.zip`.
-- TensorBoard tworzy osobny katalog per eksperyment, np. `logs/tensorboard/exp_012_*`.
+- TensorBoard tworzy osobny katalog per eksperyment, np. `logs/tensorboard/exp_012_s64x64_baseline_stage1_*`.
 
+### LunarLander-v3 — plan 5 treningów
+
+Druga gra korzysta z osobnego pliku [data/lunarlander_experiments.csv](data/lunarlander_experiments.csv). Zawiera 5 treningów po `300000` kroków:
+
+- `ll_001_s64x64_batch_large_primary` — główny kandydat startowy, oparty o najlepszy kompromis z CartPole.
+- `ll_002_s64x64_ent_zero_alt` — wariant alternatywny z wyłączoną dodatkową entropią.
+- `ll_003_s64x64_lr_high_alt` — wariant alternatywny z wyższym learning rate.
+- `ll_004_s16x16_gamma_high_compare` — najlepszy przedstawiciel małej sieci do porównania.
+- `ll_005_s1024x1024x1024_batch_large_compare` — najlepszy przedstawiciel dużej sieci do porównania.
+
+Uruchomienie:
+
+```bash
+source .venv/bin/activate
+python -m src.training --csv data/lunarlander_experiments.csv
+```
+
+Wymagane zależności dla LunarLander:
+
+```bash
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Jeśli środowisko było utworzone przed dodaniem Box2D, wykonaj ponowną instalację zależności. `LunarLander-v3` wymaga `swig` i `gymnasium[box2d]`.
+
+### LunarLander-v3 — eksperyment pre5 z optymalizacją bayesowską
+
+Eksperyment pre5 jest **odseparowany** od bazowego pipeline'u CSV. Zamiast ręcznie przygotowanej listy wariantów uruchamia osobne studium Optuny, które porównuje wyłącznie dwie architektury:
+
+- `[64, 64]` — lekki kandydat, który w poprzednich eksperymentach dawał sensowny koszt i pojedyncze dodatnie wyniki,
+- `[128, 128]` — wariant pośredni, sprawdzający czy większa pojemność poprawi LunarLandera bez kosztu sieci `[1024, 1024, 1024]`.
+
+Runner `python -m src.lunarlander_bayes` korzysta z tej samej idei co opisany artykuł o PPO hyperparameter optimization:
+
+- search space jest głównie **zdyskretyzowany**, aby ograniczyć liczbę kombinacji na CPU,
+- optimizer używa **TPE** i wykorzystuje historię prób do kolejnych sugestii,
+- trening raportuje wyniki pośrednie, dzięki czemu **MedianPruner** może ucinać słabe konfiguracje,
+- funkcja celu premiuje nie tylko średni reward, ale też stabilność polityki: `objective_score = mean_reward - stability_penalty * std_reward`.
+
+Instalacja zależności dla workflow bayesowskiego:
+
+```bash
+source .venv/bin/activate
+pip install -r requirements-humanoid.txt
+```
+
+Uruchomienie studium pre5:
+
+```bash
+source .venv/bin/activate
+python -m src.lunarlander_bayes --trials 40 --timesteps 300000 --startup-trials 8 --pruner-warmup-steps 50000 --report-interval-timesteps 50000 --eval-episodes 20 --stability-penalty 0.1 --results-csv data/lunarlander_bayes_results.csv
+```
+
+Domyślne artefakty i resume:
+
+- wyniki prób trafiają do `data/lunarlander_bayes_results.csv`,
+- storage Optuny jest domyślnie zapisywany do `sqlite:///data/lunarlander_optuna.db`,
+- ponowne uruchomienie tej samej komendy wznawia istniejące studium (`load_if_exists=True`),
+- URI storage można nadpisać parametrem `--optuna-storage`.
+
+Założenia pre5:
+
+- środowisko: `LunarLander-v3`,
+- architektury: `[64, 64]` oraz `[128, 128]`,
+- algorytm: `PPO`,
+- metoda strojenia: `Optuna TPE`,
+- strojone hiperparametry: `learning_rate`, `batch_size`, `gamma`, `n_steps`, `ent_coef`, `gae_lambda`, `clip_range`, `target_kl`, `n_epochs`, `vf_coef`, `normalize_advantage`,
+- early stopping: `MedianPruner` po raportach pośrednich,
+- artefakty: modele w `models/`, TensorBoard w `logs/tensorboard/`, wyniki prób i statusy w `data/lunarlander_bayes_results.csv`.
+
+Jeśli chcesz wykonać tani smoke test samego workflow, użyj mniejszego budżetu:
+
+```bash
+source .venv/bin/activate
+python -m src.lunarlander_bayes --trials 2 --timesteps 100000 --startup-trials 1 --pruner-warmup-steps 50000 --report-interval-timesteps 50000 --eval-episodes 10 --stability-penalty 0.0 --results-csv data/lunarlander_bayes_smoke.csv
+```
+
+To studium nie rozszerza `python -m src.training --csv ...`. To świadoma decyzja architektoniczna: OFAT i Optuna odpowiadają na inne pytania badawcze i produkują inne artefakty.
+
+### Humanoid-v5 — eksperyment 5 z optymalizacją bayesowską
+
+Wariant Humanoid jest **celowo odseparowany** od bazowego pipeline'u CartPole/LunarLander. Używa jednej architektury sieci `256 x 256` i stroi wyłącznie hiperparametry PPO metodą bayesowską.
+
+Instalacja opcjonalnych zależności tylko dla tej wariacji:
+
+```bash
+source .venv/bin/activate
+pip install -r requirements-humanoid.txt
+```
+
+Uruchomienie studium:
+
+```bash
+source .venv/bin/activate
+python -m src.humanoid_bayes --trials 30 --timesteps 1000000 --startup-trials 5 --pruner-warmup-steps 100000 --report-interval-timesteps 100000 --eval-episodes 20 --stability-penalty 0.1 --results-csv data/humanoid_bayes_results.csv
+```
+
+Start ewaluacji najlepszego modelu Humanoida:
+
+```bash
+export SDL_VIDEODRIVER=cocoa
+source .venv/bin/activate
+python -m src.evaluate --model-path models/<best_humanoid_model>.zip --env-id Humanoid-v5 --episodes 10
+```
+
+Start ewaluacji najlepszego modelu CartPole przez wrapper:
+
+```bash
+bash scripts/evaluate_cartpole.sh
+```
+
+Start ewaluacji najlepszego modelu LunarLander przez wrapper:
+
+```bash
+bash scripts/evaluate_lunarlander.sh
+```
+
+Resume i dashboard Optuny:
+
+- domyślnie studium zapisuje się do `sqlite:///data/humanoid_optuna.db`,
+- po przerwaniu procesu kolejne uruchomienie komendy wznawia to samo studium (`load_if_exists=True`),
+- opcjonalnie URI storage można nadpisać parametrem `--optuna-storage`.
+
+Dlaczego nie `10 x 300000`:
+
+- dla `Humanoid-v5` taki budżet jest praktycznie smoke testem, a nie sensownym strojeniem PPO,
+- TPE potrzebuje fazy startup zanim zacznie realnie wykorzystywać historię prób,
+- sam `MedianPruner` bez raportów pośrednich nic nie daje, więc moduł trenuje teraz etapami i raportuje wynik co `100000` kroków,
+- dla Humanoida sama średnia nagroda jest zbyt szumna, dlatego scorer Optuny używa teraz `mean_reward - 0.1 * std_reward`.
+
+Jeśli chcesz tylko sprawdzić, czy środowisko i MuJoCo startują poprawnie, użyj krótszego smoke testu:
+
+```bash
+source .venv/bin/activate
+python -m src.humanoid_bayes --trials 2 --timesteps 100000 --startup-trials 1 --pruner-warmup-steps 50000 --report-interval-timesteps 50000 --eval-episodes 10 --stability-penalty 0.0 --results-csv data/humanoid_bayes_smoke.csv
+```
+
+Źródła, na których opiera się ta konfiguracja:
+
+- Joel Baptista: w PPO istotne są nie tylko `learning_rate`, `batch_size`, `n_steps`, ale też `clip_range`, `target_kl`, `gae_lambda`, `n_epochs`, `vf_coef` i `normalize_advantage`.
+- arXiv 2406.18293: dla Humanoida warto uwzględniać stabilność polityki, a nie wyłącznie średni wynik, dlatego funkcja celu zawiera karę za wariancję.
+
+Założenia eksperymentu 5:
+
+- środowisko: `Humanoid-v5`
+- architektura: `[256, 256]`
+- algorytm: `PPO`
+- metoda strojenia: `Optuna TPE` (optymalizacja bayesowska)
+- strojenie PPO obejmuje także `gae_lambda`, `clip_range`, `target_kl`, `n_epochs`, `vf_coef` i `normalize_advantage`
+- early stopping: `MedianPruner`, aktywowany po raportach pośrednich z treningu
+- funkcja celu: `objective_score = mean_reward - stability_penalty * std_reward`
+- artefakty: modele w `models/`, TensorBoard w `logs/tensorboard/`, wyniki prób w `data/humanoid_bayes_results.csv` z kolumnami `status`, `trained_timesteps` i `objective_score`
+
+Istniejący `python -m src.training --csv ...` nie został rozszerzony o tryb Humanoida. To świadoma decyzja izolująca nową bibliotekę i nowy workflow od dotychczasowego kodu.
+
+Jeśli chcesz uprościć uruchamianie, można przenieść te komendy do małych skryptów w `scripts/` albo makefile-like wrapperów. To dobry pomysł dla komend, które odpalasz często, zwłaszcza dla:
+
+- treningu CartPole,
+- treningu LunarLander,
+- pre5 dla LunarLandera,
+- Humanoida,
+- TensorBoard i ewaluacji.
+
+W tej chwili README pokazuje komendy bezpośrednie, ale technicznie da się je opakować w proste skrypty bashowe bez zmiany logiki projektu.
+
+Gotowe wrappery są już w katalogu `scripts/` i odpowiadają najczęstszym operacjom:
+
+- `scripts/run_cartpole_training.sh`
+- `scripts/run_lunarlander_training.sh`
+- `scripts/run_lunarlander_pre5.sh`
+- `scripts/run_humanoid_bayes.sh`
+- `scripts/run_tensorboard.sh`
+- `scripts/evaluate_cartpole.sh [model_path] [episodes]`
+- `scripts/evaluate_lunarlander.sh [model_path] [episodes]`
+- `scripts/evaluate_humanoid.sh [model_path] [episodes]`
+- `scripts/export_tensorboard_csv.sh [logdir] [output_csv] [tag1 tag2 ...]`
+- `scripts/recompute_objective_scores.sh [stability_penalty] [csv1 csv2 ...]`
+
+Każdy z nich zakłada aktywację `.venv` wewnątrz skryptu i uruchamia gotową komendę bez ręcznego klepania parametrów.
 ### Szybka weryfikacja startu treningu
 
 Jeśli chcesz najpierw sprawdzić sam mechanizm uruchomienia bez pełnych 33 eksperymentów, przygotuj tymczasowy CSV z jednym wierszem i uruchom tę samą komendę `python -m src.training --csv <ścieżka>`. Logika treningu i zapisu artefaktów jest identyczna.
@@ -147,7 +334,14 @@ Jeśli chcesz najpierw sprawdzić sam mechanizm uruchomienia bez pełnych 33 eks
 
 ```bash
 export SDL_VIDEODRIVER=cocoa
-python -m src.evaluate --model-path models/exp_001.zip --env-id CartPole-v1 --episodes 5
+python -m src.evaluate --model-path models/exp_016_s64x64_batch_large_stage1.zip --env-id CartPole-v1 --episodes 5
+```
+
+Ewaluacja najlepszego modelu LunarLander:
+
+```bash
+export SDL_VIDEODRIVER=cocoa
+python -m src.evaluate --model-path models/ll_012_s1024x1024x1024_gamma_high_tune600k.zip --env-id LunarLander-v3 --episodes 10
 ```
 
 Ładuje wytrenowany model i renderuje grę w trybie graficznym (`render_mode="human"`).
@@ -161,6 +355,51 @@ tensorboard --logdir=./logs/tensorboard/ --port=6006
 ```
 
 Dashboard: `http://localhost:6006`
+
+### Eksport TensorBoard do CSV (wiele runow naraz)
+
+Do eksportu danych z wielu treningow jednoczesnie uzyj wrappera:
+
+```bash
+bash scripts/export_tensorboard_csv.sh
+```
+
+Domyslnie zapisze:
+
+- `data/tensorboard_scalars_pivot.csv` (uklad pivot: kolumny `run`, `step`, tagi),
+- `data/tensorboard_scalars_long.csv` (uklad long: `run`, `step`, `tag`, `value`).
+
+Mozesz wskazac inny katalog logow i plik wyjsciowy:
+
+```bash
+bash scripts/export_tensorboard_csv.sh logs/tensorboard data/porownanie_treningow.csv
+```
+
+Mozesz tez filtrowac tylko wybrane tagi (np. do raportu):
+
+```bash
+bash scripts/export_tensorboard_csv.sh logs/tensorboard data/porownanie_treningow.csv rollout/ep_rew_mean train/loss train/value_loss train/policy_gradient_loss
+```
+
+### Wspolny objective_score dla wszystkich serii
+
+Aby miec jeden punkt odniesienia miedzy CartPole, LunarLander i Humanoid, przelicz `objective_score` hurtowo:
+
+```bash
+bash scripts/recompute_objective_scores.sh 0.1
+```
+
+Domyslnie skrypt przelicza i nadpisuje:
+
+- `data/experiments.csv`,
+- `data/lunarlander_experiments.csv`,
+- `data/humanoid_bayes_results.csv`.
+
+Mozesz tez podac wlasna liste plikow:
+
+```bash
+bash scripts/recompute_objective_scores.sh 0.1 data/experiments.csv data/lunarlander_experiments.csv data/humanoid_bayes_results_512x512.csv
+```
 
 Po poprawnym treningu w logach są dostępne co najmniej następujące tagi scalar potwierdzone smoke testem:
 
@@ -325,6 +564,8 @@ cart_pole/
 | ADR | `.github/artifacts/adr.md` | Rejestr decyzji architektonicznych |
 | Backlog | `.github/artifacts/architecture_and_tasks.md` | Architektura i harmonogram zadań |
 | Baza wiedzy | `.github/artifacts/dev_knowledge_base.md` | Znane problemy i rozwiązania |
+| Analiza CartPole | `.github/artifacts/cartpole_analysis.md` | Szczegółowa analiza wyników etapu 1 i 2 oraz rekomendacje do LunarLander |
+| Analiza LunarLander | `.github/artifacts/lunarlander_analysis.md` | Szczegółowa analiza 5 treningów LunarLander oraz rekomendacja modelu do demo |
 | Raport testów | `.github/artifacts/test-report.md` | Status testów i coverage |
 | AGENTS | `AGENTS.md` | Zasady współpracy agentów AI |
 
