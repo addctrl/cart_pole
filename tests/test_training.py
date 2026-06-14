@@ -5,11 +5,7 @@ from unittest.mock import MagicMock, call, patch
 
 import pytest
 
-from src.training import (
-    get_cooldown_seconds,
-    run_all_experiments,
-    run_experiment,
-)
+from src.training import get_cooldown_seconds, main, run_all_experiments, run_experiment
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -107,6 +103,7 @@ def test_run_experiment_returns_metrics(small_config: dict[str, Any]) -> None:
 
     with (
         patch("src.training.gym.make", return_value=mock_env),
+        patch("src.training.Monitor", side_effect=lambda env: env),
         patch("src.training.PPO", return_value=mock_model),
         patch("src.training.evaluate_policy", return_value=(450.0, 25.0)),
     ):
@@ -132,6 +129,7 @@ def test_run_experiment_saves_model(small_config: dict[str, Any]) -> None:
 
     with (
         patch("src.training.gym.make", return_value=mock_env),
+        patch("src.training.Monitor", side_effect=lambda env: env),
         patch("src.training.PPO", return_value=mock_model),
         patch("src.training.evaluate_policy", return_value=(450.0, 25.0)),
     ):
@@ -154,6 +152,7 @@ def test_run_experiment_uses_device_auto(small_config: dict[str, Any]) -> None:
 
     with (
         patch("src.training.gym.make", return_value=mock_env),
+        patch("src.training.Monitor", side_effect=lambda env: env),
         patch("src.training.PPO", mock_ppo_class),
         patch("src.training.evaluate_policy", return_value=(450.0, 25.0)),
     ):
@@ -176,6 +175,7 @@ def test_run_experiment_tb_log_name(small_config: dict[str, Any]) -> None:
 
     with (
         patch("src.training.gym.make", return_value=mock_env),
+        patch("src.training.Monitor", side_effect=lambda env: env),
         patch("src.training.PPO", return_value=mock_model),
         patch("src.training.evaluate_policy", return_value=(450.0, 25.0)),
     ):
@@ -274,3 +274,26 @@ def test_run_all_experiments_saves_results(small_config: dict[str, Any]) -> None
         call("dummy.csv", "exp_001", mock_metrics),
         call("dummy.csv", "exp_002", mock_metrics),
     ]
+
+
+def test_main_calls_run_all_experiments(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Zweryfikuj przekazanie argumentu ``--csv`` do run_all_experiments.
+
+    Parameters
+    ----------
+    monkeypatch : pytest.MonkeyPatch
+        Fixture do tymczasowej podmiany ``sys.argv``.
+    """
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "training",
+            "--csv",
+            "data/experiments.csv",
+        ],
+    )
+
+    with patch("src.training.run_all_experiments") as mock_run_all_experiments:
+        main()
+
+    mock_run_all_experiments.assert_called_once_with("data/experiments.csv")

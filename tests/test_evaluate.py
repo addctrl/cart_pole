@@ -41,6 +41,33 @@ def test_evaluate_model_loads_model_and_renders() -> None:
     mock_env.close.assert_called_once_with()
 
 
+def test_evaluate_model_loads_vecnormalize_stats() -> None:
+    """Zweryfikuj ładowanie statystyk VecNormalize dla wytrenowanego modelu."""
+    mock_model = MagicMock()
+    mock_env = MagicMock()
+    mock_env.reset.side_effect = ["obs-1", "obs-2"]
+    mock_env.step.side_effect = [
+        ("obs-2", [1.0], [False], [{}]),
+        ("obs-3", [1.0], [True], [{}]),
+    ]
+    mock_model.predict.side_effect = [(0, None), (1, None)]
+
+    with (
+        patch("src.evaluate.Path.is_file", return_value=True),
+        patch("src.evaluate.Path.exists", return_value=True),
+        patch("src.evaluate.PPO.load", return_value=mock_model),
+        patch("src.evaluate.DummyVecEnv", return_value=mock_env) as mock_dummy_vec_env,
+        patch("src.evaluate.VecNormalize.load", return_value=mock_env) as mock_vec_load,
+        patch("src.evaluate.gym.make"),
+    ):
+        evaluate_model("models/hum_256x256_trial_001.zip", "Humanoid-v5", 1)
+
+    mock_dummy_vec_env.assert_called_once()
+    mock_vec_load.assert_called_once()
+    assert mock_model.predict.call_count == 2
+    mock_env.close.assert_called_once_with()
+
+
 def test_evaluate_model_invalid_model_path() -> None:
     """Zweryfikuj błąd dla nieistniejącej ścieżki modelu."""
     with pytest.raises(FileNotFoundError, match="Plik modelu nie istnieje"):

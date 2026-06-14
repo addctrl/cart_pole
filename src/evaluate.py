@@ -5,6 +5,64 @@ from pathlib import Path
 
 import gymnasium as gym
 from stable_baselines3 import PPO
+from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
+
+
+def _find_vecnormalize(model_path: Path) -> Path | None:
+    """Znajdź plik VecNormalize powiązany z modelem.
+
+    Szuka kolejno:
+    1. ``{stem}_vecnormalize.pkl`` (konwencja Bayesa)
+    2. ``latest_vecnormalize.pkl`` w tym samym katalogu (konwencja produkcyjna)
+
+    Parameters
+    ----------
+    model_path : Path
+        Ścieżka do pliku modelu (z lub bez ``.zip``).
+
+    Returns
+    -------
+    Path | None
+        Ścieżka do pliku VecNormalize lub ``None``.
+    """
+    stem = model_path.stem
+    if stem.endswith(".zip"):
+        stem = Path(stem).stem
+
+    candidates = [
+        model_path.parent / f"{stem}_vecnormalize.pkl",
+        model_path.parent / "latest_vecnormalize.pkl",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def _build_evaluation_env(model_path: Path, env_id: str) -> tuple[object, bool]:
+    """Zbuduj środowisko ewaluacyjne i opcjonalnie dołącz VecNormalize.
+
+    Parameters
+    ----------
+    model_path : Path
+        Ścieżka do pliku modelu.
+    env_id : str
+        Identyfikator środowiska Gymnasium.
+
+    Returns
+    -------
+    tuple[object, bool]
+        Środowisko ewaluacyjne oraz flaga wskazująca, czy jest to VecEnv.
+    """
+    vecnormalize_path = _find_vecnormalize(model_path)
+    if vecnormalize_path is not None:
+        vec_env = DummyVecEnv([lambda: gym.make(env_id, render_mode="human")])
+        vec_env = VecNormalize.load(str(vecnormalize_path), vec_env)
+        vec_env.training = False
+        vec_env.norm_reward = False
+        return vec_env, True
+
+    return gym.make(env_id, render_mode="human"), False
 
 
 def evaluate_model(model_path: str, env_id: str, episodes: int) -> None:
@@ -28,18 +86,27 @@ def evaluate_model(model_path: str, env_id: str, episodes: int) -> None:
     if not model_file.is_file():
         raise FileNotFoundError(f"Plik modelu nie istnieje: {model_path}")
 
-    model = PPO.load(model_path)
-    env = gym.make(env_id, render_mode="human")
+    env, is_vec_env = _build_evaluation_env(model_file, env_id)
+    model = PPO.load(model_path, env=env if is_vec_env else None)
 
     try:
         for _ in range(episodes):
-            observation, _ = env.reset()
-            terminated = False
-            truncated = False
+            if is_vec_env:
+                observation = env.reset()
+                terminated = False
 
-            while not (terminated or truncated):
-                action, _ = model.predict(observation, deterministic=True)
-                observation, _, terminated, truncated, _ = env.step(action)
+                while not terminated:
+                    action, _ = model.predict(observation, deterministic=True)
+                    observation, _, done, _ = env.step(action)
+                    terminated = bool(done[0])
+            else:
+                observation, _ = env.reset()
+                terminated = False
+                truncated = False
+
+                while not (terminated or truncated):
+                    action, _ = model.predict(observation, deterministic=True)
+                    observation, _, terminated, truncated, _ = env.step(action)
     finally:
         env.close()  # type: ignore[no-untyped-call]
 
