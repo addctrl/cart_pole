@@ -114,12 +114,15 @@ models/*.zip ──► evaluate.py ──► render_mode="human"
 
 ### Epik 5: Uruchomienie eksperymentów
 
-- [ ] **T-5.1:** Uruchomienie pełnej pętli treningowej na CartPole-v1
+- [x] **T-5.1:** Uruchomienie pełnej pętli treningowej na CartPole-v1
   - Kryteria akceptacji: Wszystkie wiersze w CSV mają wypełnione kolumny wynikowe. Logi TensorBoard istnieją. Wagi modeli zapisane.
-- [ ] **T-5.2:** Analiza wyników w TensorBoard
+  - Status: 33 eksperymentów etapu 1 + 10 eksperymentów etapu 2. 17/33 osiągnęło pełne rozwiązanie w etapie 1.
+- [x] **T-5.2:** Analiza wyników w TensorBoard
   - Kryteria akceptacji: Wykresy porównawcze `ep_rew_mean` dla 3 architektur sieci. Screenshoty w dokumentacji.
-- [ ] **T-5.3:** Uruchomienie ewaluacji najlepszego modelu na LunarLander-v2
+  - Status: Raporty analityczne w `cartpole_analysis.md` i `lunarlander_analysis.md`. Eksport danych TB do CSV.
+- [x] **T-5.3:** Uruchomienie ewaluacji najlepszego modelu na LunarLander-v3
   - Kryteria akceptacji: Demo live działa z `render_mode="human"`.
+  - Status: Ewaluacja `ll_012_s1024x1024x1024_gamma_high_tune600k` działa. Wrapper `scripts/evaluate_lunarlander.sh`.
 - [x] **T-5.4:** Przygotowanie odseparowanej ścieżki Humanoid z optymalizacją bayesowską
   - Kryteria akceptacji: istnieje osobny moduł CLI dla `Humanoid-v5`, stała architektura `[256, 256]`, osobny plik wymagań i brak zmian behawioralnych w `src/training.py`.
 - [ ] **T-5.5:** Uruchomienie eksperymentu 5 dla Humanoid na jednej sieci `256 x 256`
@@ -131,10 +134,25 @@ models/*.zip ──► evaluate.py ──► render_mode="human"
 
 ### Epik 6: Finalizacja i dokumentacja
 
-- [ ] **T-6.1:** Aktualizacja `README.md` — finalna instrukcja uruchomienia
+- [x] **T-6.1:** Aktualizacja `README.md` — finalna instrukcja uruchomienia
+  - Status: README zawiera pełną dokumentację operacyjną, wnioski końcowe, wydajność termiczną M4, Humanoida.
 - [ ] **T-6.2:** Generowanie dokumentacji HTML via `pdoc`
 - [ ] **T-6.3:** Eksport historii komunikacji z AI do repozytorium
-- [ ] **T-6.4:** Przygotowanie prezentacji zaliczeniowej
+- [x] **T-6.4:** Przygotowanie prezentacji zaliczeniowej
+  - Status: Pełny plan prezentacji w `docs/plan-prezentacji.md`.
+
+### Realizacja pozaplanowa: Humanoid-v5
+
+- [x] **T-EXT-1:** Moduł bayesowski `src/humanoid_bayes.py` — architektura `[256, 256]`, 40 triali
+- [x] **T-EXT-2:** Rozszerzony search space + scoring stabilnościowy
+- [x] **T-EXT-3:** Resume Optuny (SQLite storage)
+- [x] **T-EXT-4:** Seria `[512, 512]`, 51 triali — 3× lepsze wyniki niż `[256, 256]`
+- [x] **T-EXT-5:** Trening produkcyjny 30M kroków z auto-resume i checkpointem
+- [x] **T-EXT-6:** Moduł ewaluacji `src/evaluate_humanoid_production.py`
+
+### Obserwacja termiczna
+
+- MacBook Air M4: **~8h ciągłego treningu Humanoida**, max **85°C**, **zero thermal throttlingu**.
 
 ---
 
@@ -166,6 +184,9 @@ Epik 0 ──► Epik 1 ──► Epik 2 ──► Epik 3 ──► Epik 4 ─�
 - Dedykowany moduł `python -m src.lunarlander_bayes` izoluje eksperyment pre5 dla `LunarLander-v3` i porównuje architektury `[64, 64]` oraz `[128, 128]` w osobnym studium Optuny.
 - Dodano moduł `python -m src.tensorboard_export` oraz wrapper `scripts/export_tensorboard_csv.sh` do eksportu scalarów TensorBoard z wielu runów jednocześnie do CSV (`pivot` + `long`).
 - Dodano moduł `python -m src.objective_score_csv` oraz wrapper `scripts/recompute_objective_scores.sh` do ujednolicania `objective_score` między seriami eksperymentów.
+- Wyeksportowane dane TensorBoard do `data/tensorboard_scalars_pivot.csv` (5.2 MB) i `data/tensorboard_scalars_long.csv` (18 MB) — obejmują 192 runy treningowe.
+- **Realizacja pozaplanowa:** Humanoid-v5 z optymalizacją bayesowską na architekturach `[256, 256]` i `[512, 512]` + trening produkcyjny 30M kroków.
+- **Wydajność termiczna:** MacBook Air M4 — max 85°C, zero thermal throttlingu po ~8h ciągłego treningu Humanoida.
 
 ---
 

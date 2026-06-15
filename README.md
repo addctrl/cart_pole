@@ -16,6 +16,7 @@ Udowodnienie analitycznego podejścia inżyniera do procesu uczenia maszynowego.
 |---|---|
 | **CartPole-v1** | Baza analityczna — szybkie przemielenie macierzy eksperymentów |
 | **LunarLander-v3** | Demo docelowe i eksperyment pre5 — weryfikacja najlepszych parametrów na żywo oraz porównanie architektur w studium Optuny |
+| **Humanoid-v5** ⚡ | Realizacja pozaplanowa — walidacja skalowalności pipeline do najtrudniejszego środowiska MuJoCo (376-wymiarowy stan, 17 ciągłych akcji) |
 
 ### Zakres badawczy
 
@@ -532,6 +533,45 @@ pdoc src/ -o docs/
 
 ---
 
+## Wydajność termiczna MacBooka Air M4
+
+Projekt został w całości zrealizowany na **MacBook Air M4** z **chłodzeniem pasywnym** i **24 GB zunifikowanej pamięci RAM**.
+
+| Parametr | Wartość |
+|---|---|
+| Łączny czas treningów | >12 godzin (w tym ~8h Humanoid 30M kroków) |
+| Maksymalna temperatura CPU | **~85°C** |
+| Thermal throttling | **Nie wystąpił** |
+| Cooldown między eksperymentami | 60s (małe sieci) / 120s (duże sieci) |
+
+Mechanizm `time.sleep()` między eksperymentami okazał się w pełni wystarczający. MacBook Air M4 z chłodzeniem pasywnym **nie jest ograniczeniem** dla treningu RL — nawet przy 8-godzinnym ciągłym treningu Humanoida (MuJoCo, sieć `[512, 512]`, 30 milionów kroków) temperatura nie przekroczyła 85°C, a thermal throttling się nie pojawił.
+
+---
+
+## Wnioski końcowe
+
+### Nie istnieje jedna architektura najlepsza zawsze
+
+| Środowisko | Najlepsza architektura | Uzasadnienie |
+|---|---|---|
+| CartPole-v1 | `[64, 64]` | Proste środowisko — mała sieć wystarczy |
+| LunarLander-v3 | `[128, 128]` | Pośrednia złożoność — `[64, 64]` za mało, `[1024, 1024, 1024]` za drogo |
+| Humanoid-v5 | `[512, 512]` | 376-wymiarowy stan, 17-wymiarowa ciągła akcja — potrzebna duża pojemność |
+
+### OFAT ma granice — optymalizacja bayesowska daje lepsze wyniki
+
+OFAT nie wykrywa interakcji między parametrami. Optuna z TPE + MedianPruner inteligentnie przeszukuje przestrzeń i ucina słabe próby. Na LunarLander Optuna dała `mean_reward=280.3` vs OFAT `mean_reward=223.5`.
+
+### Dobry wynik na prostym środowisku nie gwarantuje transferu
+
+Najlepszy model CartPole dał ujemny wynik na LunarLander. Każde środowisko wymaga osobnego strojenia.
+
+### Punkt nasycenia jakości
+
+CartPole osiągnął sufit (`500.0`) już przy 100k kroków. Dogrywka 300k nie poprawiła nic — więcej nie znaczy lepiej.
+
+---
+
 ## Struktura projektu
 
 ```
@@ -546,6 +586,8 @@ cart_pole/
 │   │   ├── prd.md                      # Wymagania produktowe
 │   │   ├── adr.md                      # Rejestr decyzji
 │   │   ├── architecture_and_tasks.md   # Backlog i architektura
+│   │   ├── cartpole_analysis.md        # Analiza CartPole etap 1+2
+│   │   ├── lunarlander_analysis.md     # Analiza LunarLander
 │   │   ├── dev_knowledge_base.md       # Baza wiedzy
 │   │   └── test-report.md             # Raport z testów
 │   └── workflows/
@@ -553,23 +595,41 @@ cart_pole/
 ├── src/                               # Kod źródłowy
 │   ├── __init__.py
 │   ├── config.py                      # Ładowanie konfiguracji z CSV
-│   ├── training.py                    # Pętla treningowa
-│   └── evaluate.py                    # Skrypt ewaluacyjny
-├── tests/                             # Testy (pytest)
+│   ├── training.py                    # Pętla treningowa OFAT
+│   ├── evaluate.py                    # Skrypt ewaluacyjny (demo)
+│   ├── lunarlander_bayes.py           # Optuna pre5 dla LunarLander
+│   ├── humanoid_bayes.py              # Optuna dla Humanoid
+│   ├── humanoid_production.py         # Produkcyjny trening 30M
+│   ├── evaluate_humanoid_production.py # Ewaluacja Humanoida
+│   ├── tensorboard_export.py          # Eksport TB do CSV
+│   └── objective_score_csv.py         # Przeliczanie objective_score
+├── tests/                             # Testy (pytest, 100% coverage)
 │   ├── __init__.py
 │   ├── test_config.py
 │   ├── test_training.py
-│   └── test_evaluate.py
+│   ├── test_evaluate.py
+│   ├── test_humanoid_bayes.py
+│   ├── test_lunarlander_bayes.py
+│   ├── test_humanoid_production.py
+│   ├── test_evaluate_humanoid_production.py
+│   ├── test_tensorboard_export.py
+│   └── test_objective_score_csv.py
 ├── data/
-│   └── experiments.csv                # Konfiguracja + wyniki
+│   ├── experiments.csv                # CartPole: 33+10 eksperymentów OFAT
+│   ├── lunarlander_experiments.csv    # LunarLander: 5+11 eksperymentów OFAT
+│   ├── lunarlander_bayes_results.csv  # LunarLander pre5: Optuna 40 triali
+│   ├── humanoid_bayes_results.csv     # Humanoid 256x256: Optuna 40 triali
+│   └── humanoid_bayes_results_512x512.csv # Humanoid 512x512: Optuna 51 triali
+├── scripts/                           # Wrappery uruchomieniowe
 ├── logs/
-│   └── tensorboard/                   # Logi TensorBoard
-├── models/                            # Wagi modeli (.zip)
-├── docs/                              # Dokumentacja HTML (pdoc)
+│   └── tensorboard/                   # Logi TensorBoard (192 runy)
+├── models/                            # Wagi modeli (.zip) — 104 modeli
+├── docs/                              # Dokumentacja + plan prezentacji
 ├── AGENTS.md                          # Manifest współpracy agentów
 ├── CHANGELOG.md                       # Historia zmian (SemVer)
 ├── README.md                          # Ten plik
-├── requirements.txt                   # Zależności Python
+├── requirements.txt                   # Zależności bazowe
+├── requirements-humanoid.txt          # Zależności MuJoCo + Optuna
 ├── pyproject.toml                     # Konfiguracja narzędzi
 └── zadanie.md                         # Specyfikacja zadania
 ```
@@ -581,11 +641,12 @@ cart_pole/
 | Dokument | Ścieżka | Opis |
 |---|---|---|
 | PRD | `.github/artifacts/prd.md` | Pełne wymagania produktowe |
-| ADR | `.github/artifacts/adr.md` | Rejestr decyzji architektonicznych |
+| ADR | `.github/artifacts/adr.md` | Rejestr decyzji architektonicznych (7 decyzji) |
 | Backlog | `.github/artifacts/architecture_and_tasks.md` | Architektura i harmonogram zadań |
 | Baza wiedzy | `.github/artifacts/dev_knowledge_base.md` | Znane problemy i rozwiązania |
-| Analiza CartPole | `.github/artifacts/cartpole_analysis.md` | Szczegółowa analiza wyników etapu 1 i 2 oraz rekomendacje do LunarLander |
-| Analiza LunarLander | `.github/artifacts/lunarlander_analysis.md` | Szczegółowa analiza 5 treningów LunarLander oraz rekomendacja modelu do demo |
+| Analiza CartPole | `.github/artifacts/cartpole_analysis.md` | Porównanie 33+10 eksperymentów, wnioski per architektura |
+| Analiza LunarLander | `.github/artifacts/lunarlander_analysis.md` | Analiza 5 treningów + rekomendacja modelu do demo |
+| Plan prezentacji | `docs/plan-prezentacji.md` | Pełny plan prezentacji z wnioskami i chronologią |
 | Raport testów | `.github/artifacts/test-report.md` | Status testów i coverage |
 | AGENTS | `AGENTS.md` | Zasady współpracy agentów AI |
 
