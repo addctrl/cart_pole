@@ -37,4 +37,4 @@ fi
 
 export SDL_VIDEODRIVER=cocoa
 source .venv/bin/activate
-python -m src.evaluate --model-path models/humanoid_prod/latest_model.zip --env-id Humanoid-v5 --episodes "$episodes"
+python -m src.evaluate --model-path "$model_path" --env-id Humanoid-v5 --episodes "$episodes"

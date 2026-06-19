@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="pdoc 15.0.1"/>
-    <title>src API documentation</title>
+    <title>src.evaluate_humanoid API documentation</title>
 
     <style>/*! * Bootstrap Reboot v5.0.0 (https://getbootstrap.com/) * Copyright 2011-2021 The Bootstrap Authors * Copyright 2011-2021 Twitter, Inc. * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE) * Forked from Normalize.css, licensed MIT (https://github.com/necolas/normalize.css/blob/master/LICENSE.md) */*,::after,::before{box-sizing:border-box}@media (prefers-reduced-motion:no-preference){:root{scroll-behavior:smooth}}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#fff;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}hr{margin:1rem 0;color:inherit;background-color:currentColor;border:0;opacity:.25}hr:not([size]){height:1px}h1,h2,h3,h4,h5,h6{margin-top:0;margin-bottom:.5rem;font-weight:500;line-height:1.2}h1{font-size:calc(1.375rem + 1.5vw)}@media (min-width:1200px){h1{font-size:2.5rem}}h2{font-size:calc(1.325rem + .9vw)}@media (min-width:1200px){h2{font-size:2rem}}h3{font-size:calc(1.3rem + .6vw)}@media (min-width:1200px){h3{font-size:1.75rem}}h4{font-size:calc(1.275rem + .3vw)}@media (min-width:1200px){h4{font-size:1.5rem}}h5{font-size:1.25rem}h6{font-size:1rem}p{margin-top:0;margin-bottom:1rem}abbr[data-bs-original-title],abbr[title]{-webkit-text-decoration:underline dotted;text-decoration:underline dotted;cursor:help;-webkit-text-decoration-skip-ink:none;text-decoration-skip-ink:none}address{margin-bottom:1rem;font-style:normal;line-height:inherit}ol,ul{padding-left:2rem}dl,ol,ul{margin-top:0;margin-bottom:1rem}ol ol,ol ul,ul ol,ul ul{margin-bottom:0}dt{font-weight:700}dd{margin-bottom:.5rem;margin-left:0}blockquote{margin:0 0 1rem}b,strong{font-weight:bolder}small{font-size:.875em}mark{padding:.2em;background-color:#fcf8e3}sub,sup{position:relative;font-size:.75em;line-height:0;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}a{color:#0d6efd;text-decoration:underline}a:hover{color:#0a58ca}a:not([href]):not([class]),a:not([href]):not([class]):hover{color:inherit;text-decoration:none}code,kbd,pre,samp{font-family:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:1em;direction:ltr;unicode-bidi:bidi-override}pre{display:block;margin-top:0;margin-bottom:1rem;overflow:auto;font-size:.875em}pre code{font-size:inherit;color:inherit;word-break:normal}code{font-size:.875em;color:#d63384;word-wrap:break-word}a>code{color:inherit}kbd{padding:.2rem .4rem;font-size:.875em;color:#fff;background-color:#212529;border-radius:.2rem}kbd kbd{padding:0;font-size:1em;font-weight:700}figure{margin:0 0 1rem}img,svg{vertical-align:middle}table{caption-side:bottom;border-collapse:collapse}caption{padding-top:.5rem;padding-bottom:.5rem;color:#6c757d;text-align:left}th{text-align:inherit;text-align:-webkit-match-parent}tbody,td,tfoot,th,thead,tr{border-color:inherit;border-style:solid;border-width:0}label{display:inline-block}button{border-radius:0}button:focus:not(:focus-visible){outline:0}button,input,optgroup,select,textarea{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}button,select{text-transform:none}[role=button]{cursor:pointer}select{word-wrap:normal}select:disabled{opacity:1}[list]::-webkit-calendar-picker-indicator{display:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]:not(:disabled),[type=reset]:not(:disabled),[type=submit]:not(:disabled),button:not(:disabled){cursor:pointer}::-moz-focus-inner{padding:0;border-style:none}textarea{resize:vertical}fieldset{min-width:0;padding:0;margin:0;border:0}legend{float:left;width:100%;padding:0;margin-bottom:.5rem;font-size:calc(1.275rem + .3vw);line-height:inherit}@media (min-width:1200px){legend{font-size:1.5rem}}legend+*{clear:left}::-webkit-datetime-edit-day-field,::-webkit-datetime-edit-fields-wrapper,::-webkit-datetime-edit-hour-field,::-webkit-datetime-edit-minute,::-webkit-datetime-edit-month-field,::-webkit-datetime-edit-text,::-webkit-datetime-edit-year-field{padding:0}::-webkit-inner-spin-button{height:auto}[type=search]{outline-offset:-2px;-webkit-appearance:textfield}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-color-swatch-wrapper{padding:0}::file-selector-button{font:inherit}::-webkit-file-upload-button{font:inherit;-webkit-appearance:button}output{display:inline-block}iframe{border:0}summary{display:list-item;cursor:pointer}progress{vertical-align:baseline}[hidden]{display:none!important}</style>
     <style>/*! syntax-highlighting.css */pre{line-height:125%;}span.linenos{color:inherit; background-color:transparent; padding-left:5px; padding-right:20px;}.pdoc-code .hll{background-color:#ffffcc}.pdoc-code{background:#f8f8f8;}.pdoc-code .c{color:#3D7B7B; font-style:italic}.pdoc-code .err{border:1px solid #FF0000}.pdoc-code .k{color:#008000; font-weight:bold}.pdoc-code .o{color:#666666}.pdoc-code .ch{color:#3D7B7B; font-style:italic}.pdoc-code .cm{color:#3D7B7B; font-style:italic}.pdoc-code .cp{color:#9C6500}.pdoc-code .cpf{color:#3D7B7B; font-style:italic}.pdoc-code .c1{color:#3D7B7B; font-style:italic}.pdoc-code .cs{color:#3D7B7B; font-style:italic}.pdoc-code .gd{color:#A00000}.pdoc-code .ge{font-style:italic}.pdoc-code .gr{color:#E40000}.pdoc-code .gh{color:#000080; font-weight:bold}.pdoc-code .gi{color:#008400}.pdoc-code .go{color:#717171}.pdoc-code .gp{color:#000080; font-weight:bold}.pdoc-code .gs{font-weight:bold}.pdoc-code .gu{color:#800080; font-weight:bold}.pdoc-code .gt{color:#0044DD}.pdoc-code .kc{color:#008000; font-weight:bold}.pdoc-code .kd{color:#008000; font-weight:bold}.pdoc-code .kn{color:#008000; font-weight:bold}.pdoc-code .kp{color:#008000}.pdoc-code .kr{color:#008000; font-weight:bold}.pdoc-code .kt{color:#B00040}.pdoc-code .m{color:#666666}.pdoc-code .s{color:#BA2121}.pdoc-code .na{color:#687822}.pdoc-code .nb{color:#008000}.pdoc-code .nc{color:#0000FF; font-weight:bold}.pdoc-code .no{color:#880000}.pdoc-code .nd{color:#AA22FF}.pdoc-code .ni{color:#717171; font-weight:bold}.pdoc-code .ne{color:#CB3F38; font-weight:bold}.pdoc-code .nf{color:#0000FF}.pdoc-code .nl{color:#767600}.pdoc-code .nn{color:#0000FF; font-weight:bold}.pdoc-code .nt{color:#008000; font-weight:bold}.pdoc-code .nv{color:#19177C}.pdoc-code .ow{color:#AA22FF; font-weight:bold}.pdoc-code .w{color:#bbbbbb}.pdoc-code .mb{color:#666666}.pdoc-code .mf{color:#666666}.pdoc-code .mh{color:#666666}.pdoc-code .mi{color:#666666}.pdoc-code .mo{color:#666666}.pdoc-code .sa{color:#BA2121}.pdoc-code .sb{color:#BA2121}.pdoc-code .sc{color:#BA2121}.pdoc-code .dl{color:#BA2121}.pdoc-code .sd{color:#BA2121; font-style:italic}.pdoc-code .s2{color:#BA2121}.pdoc-code .se{color:#AA5D1F; font-weight:bold}.pdoc-code .sh{color:#BA2121}.pdoc-code .si{color:#A45A77; font-weight:bold}.pdoc-code .sx{color:#008000}.pdoc-code .sr{color:#A45A77}.pdoc-code .s1{color:#BA2121}.pdoc-code .ss{color:#19177C}.pdoc-code .bp{color:#008000}.pdoc-code .fm{color:#0000FF}.pdoc-code .vc{color:#19177C}.pdoc-code .vg{color:#19177C}.pdoc-code .vi{color:#19177C}.pdoc-code .vm{color:#19177C}.pdoc-code .il{color:#666666}</style>
@@ -16,25 +16,36 @@
     <nav class="pdoc">
         <label id="navtoggle" for="togglestate" class="pdoc-button"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke-linecap='round' stroke="currentColor" stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg></label>
         <input id="togglestate" type="checkbox" aria-hidden="true" tabindex="-1">
-        <div>
+        <div>            <a class="pdoc-button module-list-button" href="../src.html">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-left" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M10 3.5a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 1 1 0v2A1.5 1.5 0 0 1 9.5 14h-8A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2h8A1.5 1.5 0 0 1 11 3.5v2a.5.5 0 0 1-1 0v-2z"/>
+  <path fill-rule="evenodd" d="M4.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H14.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
+</svg>                &nbsp;src</a>
+
 
             <input type="search" placeholder="Search..." role="searchbox" aria-label="search"
                    pattern=".+" required>
 
 
-            <h2>Submodules</h2>
-            <ul>
-                    <li><a href="src/config.html">config</a></li>
-                    <li><a href="src/evaluate.html">evaluate</a></li>
-                    <li><a href="src/evaluate_humanoid.html">evaluate_humanoid</a></li>
-                    <li><a href="src/evaluate_humanoid_production.html">evaluate_humanoid_production</a></li>
-                    <li><a href="src/humanoid_bayes.html">humanoid_bayes</a></li>
-                    <li><a href="src/humanoid_production.html">humanoid_production</a></li>
-                    <li><a href="src/lunarlander_bayes.html">lunarlander_bayes</a></li>
-                    <li><a href="src/objective_score_csv.html">objective_score_csv</a></li>
-                    <li><a href="src/tensorboard_export.html">tensorboard_export</a></li>
-                    <li><a href="src/training.html">training</a></li>
-            </ul>
+
+            <h2>API Documentation</h2>
+                <ul class="memberlist">
+            <li>
+                    <a class="variable" href="#model_path">model_path</a>
+            </li>
+            <li>
+                    <a class="variable" href="#stats_path">stats_path</a>
+            </li>
+            <li>
+                    <a class="variable" href="#env">env</a>
+            </li>
+            <li>
+                    <a class="variable" href="#model">model</a>
+            </li>
+            <li>
+                    <a class="variable" href="#obs">obs</a>
+            </li>
+    </ul>
 
 
 
@@ -48,20 +59,223 @@
     <main class="pdoc">
             <section class="module-info">
                     <h1 class="modulename">
-src    </h1>
+<a href="./../src.html">src</a><wbr>.evaluate_humanoid    </h1>
 
-                        <div class="docstring"><p>Pakiet źródłowy projektu optymalizacji hiperparametrów RL.</p>
-</div>
+                
+                        <input id="mod-evaluate_humanoid-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 
-                        <input id="mod-src-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+                        <label class="view-source-button" for="mod-evaluate_humanoid-view-source"><span>View Source</span></label>
 
-                        <label class="view-source-button" for="mod-src-view-source"><span>View Source</span></label>
-
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">1</span></a><span class="sd">&quot;&quot;&quot;Pakiet źródłowy projektu optymalizacji hiperparametrów RL.&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">stable_baselines3</span><span class="w"> </span><span class="kn">import</span> <span class="n">PPO</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">stable_baselines3.common.vec_env</span><span class="w"> </span><span class="kn">import</span> <span class="n">VecNormalize</span><span class="p">,</span> <span class="n">DummyVecEnv</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">stable_baselines3.common.monitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">Monitor</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="c1"># 1. Ścieżki - muszą być identyczne jak w treningu</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="n">model_path</span> <span class="o">=</span> <span class="s2">&quot;models/humanoid_prod/latest_model&quot;</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="n">stats_path</span> <span class="o">=</span> <span class="s2">&quot;models/humanoid_prod/latest_vecnormalize.pkl&quot;</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="c1"># 2. Tworzymy środowisko - IDENTYCZNIE jak w _build_base_env()</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="n">env</span> <span class="o">=</span> <span class="n">DummyVecEnv</span><span class="p">([</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Monitor</span><span class="p">(</span><span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&quot;Humanoid-v5&quot;</span><span class="p">,</span> <span class="n">render_mode</span><span class="o">=</span><span class="s2">&quot;human&quot;</span><span class="p">))])</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="c1"># 3. Wczytujemy normalizację (KLUCZOWE!)</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="c1"># VecNormalize.load musi opakować to samo bazowe środowisko</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="n">env</span> <span class="o">=</span> <span class="n">VecNormalize</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">stats_path</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="c1"># 4. Wyłączamy treningowe modyfikacje normalizacji</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="n">env</span><span class="o">.</span><span class="n">training</span> <span class="o">=</span> <span class="kc">False</span> 
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="n">env</span><span class="o">.</span><span class="n">norm_reward</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="c1"># 5. Wczytujemy model</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="n">model</span> <span class="o">=</span> <span class="n">PPO</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">)</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="c1"># 6. Pętla ewaluacji</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>    <span class="n">action</span><span class="p">,</span> <span class="n">_states</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>    <span class="n">obs</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>    <span class="c1"># W VecEnv reset jest automatyczny, nie musisz ręcznie resetować</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </span></pre></div>
 
 
             </section>
+                <section id="model_path">
+                    <div class="attr variable">
+            <span class="name">model_path</span>        =
+<span class="default_value">&#39;models/humanoid_prod/latest_model&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#model_path"></a>
+    
+    
+
+                </section>
+                <section id="stats_path">
+                    <div class="attr variable">
+            <span class="name">stats_path</span>        =
+<span class="default_value">&#39;models/humanoid_prod/latest_vecnormalize.pkl&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#stats_path"></a>
+    
+    
+
+                </section>
+                <section id="env">
+                    <div class="attr variable">
+            <span class="name">env</span>        =
+<span class="default_value">&lt;stable_baselines3.common.vec_env.vec_normalize.VecNormalize object&gt;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#env"></a>
+    
+    
+
+                </section>
+                <section id="model">
+                    <div class="attr variable">
+            <span class="name">model</span>        =
+<span class="default_value">&lt;stable_baselines3.ppo.ppo.PPO object&gt;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#model"></a>
+    
+    
+
+                </section>
+                <section id="obs">
+                    <div class="attr variable">
+            <span class="name">obs</span>        =
+<input id="obs-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+            <label class="view-value-button pdoc-button" for="obs-view-value"></label><span class="default_value">array([[ 5.09267569e+00,  1.60011089e+00, -6.52595997e-01,
+        -2.57167983e+00,  1.35194111e+00, -2.84728098e+00,
+         3.29447961e+00,  1.37611759e+00,  1.22657824e+00,
+         2.29970884e+00, -3.53315502e-01,  7.32826412e-01,
+         7.59493828e-01, -2.35830247e-01, -1.63189638e+00,
+         7.91084528e-01,  5.25059032e+00, -3.19484806e+00,
+        -1.63241684e-01,  5.92802942e-01, -2.96793771e+00,
+        -1.36460459e+00, -2.36454058e+00,  7.38551021e-01,
+         1.30244732e-01, -2.44587343e-02,  1.72923673e-02,
+        -1.06237596e-02,  1.41369049e-02, -2.55641378e-02,
+        -1.01339146e-02, -6.11247355e-03, -6.24714512e-03,
+         2.38358825e-02,  1.36038028e-02, -3.28903180e-03,
+         9.89009161e-04,  2.04688087e-02,  1.19069992e-02,
+         3.32000628e-02, -7.65426923e-03, -2.47227214e-03,
+         2.51864549e-02, -2.25507412e-02,  2.74213729e-03,
+         2.72808218e+00,  3.28986001e+00, -1.38687611e+00,
+        -5.57675421e-01,  1.25450492e+00, -1.56853080e+00,
+        -1.00104105e+00,  1.54199457e+00,  2.77749062e+00,
+         8.39142467e-06,  9.13323104e-01, -2.26747796e-01,
+        -1.64037752e+00, -6.80403829e-01, -1.66122282e+00,
+         6.40690386e-01,  1.66312277e+00, -4.98209715e-01,
+         9.72530246e-01,  2.14026113e-06, -5.41229606e-01,
+        -2.43467286e-01, -5.88487566e-01, -1.24796319e+00,
+         2.13119715e-01,  4.86882359e-01, -2.56288256e-02,
+        -1.15022218e+00,  3.99531931e-01,  5.14364046e-06,
+         1.14509368e+00,  9.37187731e-01, -4.41767365e-01,
+        -1.41221631e+00, -1.57408798e+00,  3.67069580e-02,
+        -1.60763264e+00, -2.78602447e-02, -1.00861943e+00,
+         4.37430845e-06,  9.68375146e-01,  1.06572556e+00,
+        -1.02419853e+00, -8.72476399e-01, -1.00859845e+00,
+         4.59372729e-01, -1.02768838e+00,  6.84972882e-01,
+        -1.03367364e+00,  2.36135975e-06,  8.96413088e-01,
+         9.80589867e-01, -6.97526872e-01, -1.83236361e-01,
+        -3.17111492e-01,  2.33463764e-01, -2.24896640e-01,
+         3.37107152e-01, -9.27371204e-01,  1.33810750e-06,
+        -1.41591215e+00, -1.33322746e-01, -2.12888408e+00,
+        -4.47707325e-01,  2.80523270e-01, -1.85484886e+00,
+         2.33422205e-01, -1.74426436e+00, -1.15647793e-01,
+         4.37430845e-06,  1.14220142e-01,  3.71077865e-01,
+        -1.77451551e+00, -1.17457306e+00,  1.17149293e+00,
+        -1.52279162e+00,  1.10766923e+00, -1.59478819e+00,
+        -7.64592290e-01,  2.36135975e-06,  4.72008228e-01,
+         4.95769978e-01, -1.47553575e+00, -1.23047972e+00,
+         1.45238912e+00, -1.21330690e+00,  1.39804697e+00,
+        -1.26944208e+00, -8.65520537e-01,  1.33810750e-06,
+        -1.71512866e+00, -1.82995117e+00, -1.08674669e+00,
+        -2.01890305e-01,  3.80254924e-01, -1.32725215e+00,
+        -1.30748913e-01,  5.09355664e-01, -1.37799299e+00,
+         1.29740670e-06, -3.80610734e-01, -2.83968598e-01,
+         2.27260888e-01,  4.83278871e-01, -2.76863426e-01,
+        -1.27527133e-01,  3.40396971e-01, -2.82214969e-01,
+        -4.34602976e-01,  1.11645704e-06,  1.09540045e+00,
+         5.17180443e-01,  1.57438898e+00, -1.04848313e+00,
+        -2.73967057e-01, -1.80418134e+00,  3.05965245e-01,
+         1.56143510e+00,  5.18032014e-01,  1.29740670e-06,
+         1.90740693e+00,  2.87855887e+00,  2.64803576e+00,
+        -2.86144924e+00, -3.19110870e+00, -1.49372327e+00,
+         2.11354733e+00,  7.04123318e-01,  1.43177795e+00,
+         1.11645704e-06,  3.23446654e-03, -5.21277338e-02,
+         2.31888564e-03, -1.96722507e+00,  3.63492697e-01,
+         8.90045911e-02,  1.36211626e-02, -3.74597833e-02,
+         1.04231704e-02, -2.20639873e+00,  3.24701428e-01,
+         1.11487299e-01, -1.12825120e-03, -7.93240815e-02,
+        -1.85939185e-02, -2.21698308e+00,  5.26393652e-01,
+         2.94255372e-02, -1.57252625e-01,  8.31076130e-02,
+        -6.34489655e-02, -2.01788449e+00,  4.95358080e-01,
+        -7.73118734e-02,  1.80506423e-01, -7.88617805e-02,
+         6.85148388e-02, -6.20887637e-01, -9.23819095e-02,
+         1.41816407e-01,  1.80506423e-01, -7.88617805e-02,
+         6.85148388e-02, -6.20887637e-01, -9.23819095e-02,
+         1.41816407e-01,  6.11689202e-02,  4.21990678e-02,
+         2.39873771e-02, -1.92310691e+00,  5.16859531e-01,
+         1.66741014e-02, -3.15754652e-01, -8.38988367e-03,
+        -5.05884760e-04, -6.05110943e-01,  4.12627131e-01,
+         2.81774700e-01, -3.15754652e-01, -8.38988367e-03,
+        -5.05884760e-04, -6.05110943e-01,  4.12627131e-01,
+         2.81774700e-01,  4.25187461e-02,  1.92913432e-02,
+        -2.35294662e-02, -1.29173315e+00,  2.32407719e-01,
+         6.27211630e-02, -1.03047220e-02,  2.66220234e-02,
+        -1.23555381e-02, -8.32249045e-01,  1.14837125e-01,
+         3.26992152e-03, -2.85500474e-02, -3.98201272e-02,
+        -4.78315167e-02, -1.32752645e+00,  1.97537228e-01,
+         3.40190381e-02, -5.93214035e-02, -1.63647011e-02,
+        -3.02224234e-02, -1.28105795e+00,  1.75241008e-01,
+         4.65865694e-02, -4.48015630e-01, -2.57488102e-01,
+        -1.20805241e-01, -6.76961988e-02,  2.25569218e-01,
+        -2.89631635e-01, -4.55530196e-01, -1.16882607e-01,
+        -4.80361879e-02, -4.75354433e-01, -2.79689968e-01,
+         7.46221244e-01, -2.69920111e-01,  5.08215325e-03,
+        -1.13046356e-01, -3.90276819e-01, -4.12012994e-01,
+         4.27090563e-02,  8.01062435e-02,  5.72656095e-02,
+         8.07036161e-02, -3.97722796e-02, -2.35861912e-02,
+        -1.95749234e-02,  9.82759148e-03, -1.47206765e-02,
+         5.08702686e-03,  1.85780320e-02,  1.47177614e-02,
+         4.12360858e-03, -5.61973359e-03, -2.02594046e-03,
+        -5.41978097e-03,  1.34362641e-03, -6.79217093e-03,
+         1.22163575e-02, -1.32094184e-03, -4.84390883e-03,
+         1.61974772e-03,  1.21984659e-02,  3.16618104e-03,
+         8.30891542e-03,  4.09517484e-03, -3.95144848e-03,
+        -3.48468148e-03,  8.34729802e-03,  4.56364173e-03,
+         3.65052789e-01,  1.08850844e-01, -2.91283205e-02,
+        -1.04686720e-02, -5.30555733e-02, -4.30753708e-01,
+        -1.91387627e-02,  3.96389188e-03,  1.33436974e-02,
+        -3.59462714e-03, -1.76172797e-02, -3.31365876e-03,
+        -2.05322560e-02,  3.85136716e-03,  1.66336410e-02,
+        -4.80740331e-03, -2.05772407e-02, -2.09570257e-03,
+        -3.63998652e-01, -1.45592451e-01,  2.64455210e-02,
+        -3.35258134e-02,  9.91156884e-03, -4.22678411e-01,
+        -1.10139768e-03, -1.94253388e-03, -2.99756904e-03,
+        -2.42335466e-03,  2.44462001e-03, -2.49500875e-03,
+        -6.40803576e-02, -7.80865848e-02, -5.72067909e-02,
+        -7.98333585e-02,  6.75464720e-02,  1.85067207e-02,
+         8.85438174e-03, -5.52972220e-03,  6.76417816e-03,
+        -3.26468307e-03, -8.69874749e-03, -8.30849819e-03,
+         3.78744788e-02, -1.86589751e-02,  3.35486582e-03,
+        -1.76065210e-02, -4.57172953e-02,  1.96551206e-03]], dtype=float32)</span>
+
+        
+    </div>
+    <a class="headerlink" href="#obs"></a>
+    
+    
+
+                </section>
     </main>
 <script>
     function escapeHTML(html) {
@@ -115,7 +329,7 @@ src    </h1>
                 script.async = true;
                 script.onload = () => resolve(window.pdocSearch);
                 script.onerror = (e) => reject(e);
-                script.src = "search.js";
+                script.src = "../search.js";
                 document.getElementsByTagName("head")[0].appendChild(script);
             });
         } catch (e) {
@@ -157,7 +371,7 @@ src    </h1>
             }
             for (let result of results.slice(0, 10)) {
                 let doc = result.doc;
-                let url = `${doc.modulename.replaceAll(".", "/")}.html`;
+                let url = `../${doc.modulename.replaceAll(".", "/")}.html`;
                 if (doc.qualname) {
                     url += `#${doc.qualname}`;
                 }
